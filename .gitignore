@@ -1,0 +1,40 @@
+﻿# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+results/logs/
+
+# Generated experiment results
+results/benchmarks/
+
+# Temporary project inventory files
+project_structure.txt
+project_tree.txt
+file_inventory.csv
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

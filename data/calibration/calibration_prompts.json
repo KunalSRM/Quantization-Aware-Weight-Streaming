@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "prompt": "Explain the difference between CPU memory and GPU memory during LLM inference."
+  },
+  {
+    "id": 2,
+    "prompt": "Explain how quantization reduces the memory footprint of a neural network."
+  },
+  {
+    "id": 3,
+    "prompt": "What is CPU-to-GPU weight streaming?"
+  },
+  {
+    "id": 4,
+    "prompt": "Compare FP16, INT8 and INT4 numerical representations."
+  },
+  {
+    "id": 5,
+    "prompt": "Explain why dequantization may increase temporary GPU memory usage."
+  }
+]

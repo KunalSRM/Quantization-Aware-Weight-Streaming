@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QAWS | Experiment Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css?v=3">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/app.js?v=3" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">Q</span>
+      <div><b>QAWS</b><small>INFERENCE LAB</small></div>
+    </div>
+    <p class="nav-label">WORKSPACE</p>
+    <a class="nav active" href="#overview">▦ &nbsp; Overview</a>
+    <a class="nav" href="#experiments">⌘ &nbsp; Experiments</a>
+    <a class="nav" href="#analytics">◷ &nbsp; Analytics</a>
+    <a class="nav" href="#results">▤ &nbsp; Results</a>
+    <div class="sidebar-bottom"><span class="status-dot"></span> Local environment</div>
+  </aside>
+
+  <main class="main" id="overview">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">QUANTIZATION-AWARE WEIGHT STREAMING</p>
+        <h1>Experiment dashboard</h1>
+        <p class="muted">Benchmark inference speed, memory footprint and quantization trade-offs.</p>
+      </div>
+      <div class="server-status">
+        <span class="status-dot"></span><span id="connection">Connecting...</span>
+      </div>
+    </header>
+
+    <section class="cards">
+      <article class="metric-card">
+        <p>Total results</p><h2 id="resultCount">—</h2>
+        <small>JSON files discovered</small>
+      </article>
+      <article class="metric-card">
+        <p>Latest latency</p><h2 id="latestLatency">—</h2>
+        <small>Seconds per recorded run</small>
+      </article>
+      <article class="metric-card">
+        <p>Latest throughput</p><h2 id="latestThroughput">—</h2>
+        <small>Tokens per second</small>
+      </article>
+      <article class="metric-card">
+        <p>Latest GPU memory</p><h2 id="latestGpu">—</h2>
+        <small>GB allocated / reported</small>
+      </article>
+    </section>
+
+    <section class="panel" id="experiments">
+      <div class="section-heading">
+        <div>
+          <h2>Launch experiment</h2>
+          <p class="muted">Runs the existing QAWS CLI in the backend.</p>
+        </div>
+        <span class="pill">LOCAL RUN</span>
+      </div>
+
+      <div class="form-grid">
+        <label>Model
+          <select id="model">
+            <option value="qwen_0_5b">Qwen 0.5B</option>
+            <option value="qwen_1_5b">Qwen 1.5B</option>
+            <option value="qwen_3b">Qwen 3B</option>
+            <option value="llama_1b">Llama 1B</option>
+            <option value="llama_3b">Llama 3B</option>
+            <option value="smollm_135m">SmolLM 135M</option>
+            <option value="smollm_360m">SmolLM 360M</option>
+            <option value="smollm_1_7b">SmolLM 1.7B</option>
+            <option value="gemma_270m">Gemma 270M</option>
+            <option value="gemma_1b">Gemma 1B</option>
+            <option value="gemma_4b">Gemma 4B</option>
+          </select>
+        </label>
+
+        <label>Precision
+          <select id="precision">
+            <option value="FP16">FP16</option>
+            <option value="INT8">INT8</option>
+            <option value="INT4">INT4</option>
+            <option value="INT3">INT3</option>
+            <option value="INT2">INT2</option>
+          </select>
+        </label>
+
+        <button id="runButton">▶ &nbsp; Run experiment</button>
+        <button id="refreshButton" class="secondary">↻ &nbsp; Refresh results</button>
+      </div>
+      <p class="notice" id="message">Choose a model and precision to begin.</p>
+    </section>
+
+    <section class="analytics" id="analytics">
+      <div class="section-heading analytics-heading">
+        <div>
+          <h2>Performance analytics</h2>
+          <p class="muted">Charts use benchmark values found in your JSON result files.</p>
+        </div>
+        <span id="chartHint" class="pill">LIVE DATA</span>
+      </div>
+
+      <div class="chart-grid">
+        <article class="panel chart-panel wide">
+          <div class="chart-title">
+            <div>
+              <h3>Latency across recent runs</h3>
+              <p class="muted">Seconds per run · chronological order</p>
+            </div>
+            <span class="chart-mark">LINE</span>
+          </div>
+          <div class="chart-wrap"><canvas id="latencyChart"></canvas></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="chart-title">
+            <div>
+              <h3>Precision distribution</h3>
+              <p class="muted">Recorded result count</p>
+            </div>
+            <span class="chart-mark">DOUGHNUT</span>
+          </div>
+          <div class="chart-wrap doughnut-wrap"><canvas id="precisionChart"></canvas></div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="chart-title">
+            <div>
+              <h3>Throughput by precision</h3>
+              <p class="muted">Average tokens per second</p>
+            </div>
+            <span class="chart-mark">BAR</span>
+          </div>
+          <div class="chart-wrap"><canvas id="throughputChart"></canvas></div>
+        </article>
+
+        <article class="panel chart-panel wide">
+          <div class="chart-title">
+            <div>
+              <h3>Memory footprint comparison</h3>
+              <p class="muted">RAM and GPU memory across recent runs</p>
+            </div>
+            <span class="chart-mark">COMPARE</span>
+          </div>
+          <div class="chart-wrap"><canvas id="memoryChart"></canvas></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" id="results">
+      <div class="section-heading">
+        <div>
+          <h2>Benchmark results</h2>
+          <p class="muted">Most recently modified JSON files first.</p>
+        </div>
+        <span id="tableCount" class="pill">0 RUNS</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Result file</th><th>Model</th><th>Precision</th>
+              <th>Latency (s)</th><th>Tokens/s</th>
+              <th>RAM (GB)</th><th>GPU memory (GB)</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody">
+            <tr><td colspan="7" class="empty">Loading results...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <h2>Experiment logs</h2>
+          <p class="muted">Output from the current run.</p>
+        </div>
+        <span id="logState" class="pill">IDLE</span>
+      </div>
+      <pre id="logOutput">No experiment started.</pre>
+    </section>
+
+    <footer>QAWS · Local experiment dashboard</footer>
+  </main>
+</body>
+</html>
